@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managed GPU Infrastructure for Gonka Participation</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-2: #f3f6fb;
+            --text: #0f172a;
+            --muted: #475569;
+            --border: #e2e8f0;
+            --brand: #2563eb;
+            --brand-2: #1d4ed8;
+            --ok: #16a34a;
+            --warn-bg: #fef3c7;
+            --warn-text: #92400e;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10);
+            --radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a {
+            color: var(--brand);
+            text-underline-offset: 3px;
+        }
+
+        a:hover {
+            color: var(--brand-2);
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.35);
+            outline-offset: 3px;
+            border-radius: 10px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(248, 250, 252, 0.75);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 900;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: radial-gradient(120% 120% at 20% 20%, #60a5fa 0%, var(--brand) 55%, #1e40af 100%);
+            box-shadow: var(--shadow-sm);
+            display: inline-block;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 700;
+            font-size: 0.98em;
+            padding: 8px 10px;
+            border-radius: 10px;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        nav a:hover {
+            background: rgba(226, 232, 240, 0.7);
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+        
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            padding: 56px 0;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.6em;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+        }
+        
+        h2 {
+            font-size: 2em;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: var(--text);
+            letter-spacing: -0.015em;
+        }
+
+        h2:after {
+            content: "";
+            display: block;
+            width: 52px;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--brand) 0%, #60a5fa 100%);
+            margin-top: 10px;
+        }
+        
+        h3 {
+            font-size: 1.45em;
+            font-weight: 850;
+            margin-bottom: 16px;
+            margin-top: 26px;
+            color: #111827;
+            letter-spacing: -0.01em;
+        }
+        
+        p {
+            margin-bottom: 16px;
+            font-size: 1.08em;
+            line-height: 1.75;
+            color: #0f172a;
+        }
+
+        p.note,
+        .note {
+            color: var(--muted);
+        }
+        
+        .hero {
+            background: radial-gradient(1200px 520px at 50% -10%, rgba(37, 99, 235, 0.22) 0%, rgba(37, 99, 235, 0) 60%),
+                        linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            padding: 88px 0;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero:before,
+        .hero:after {
+            content: "";
+            position: absolute;
+            inset: auto auto -220px -240px;
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle at 30% 30%, rgba(96, 165, 250, 0.35) 0%, rgba(37, 99, 235, 0.0) 60%);
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        .hero:after {
+            inset: -260px -260px auto auto;
+            background: radial-gradient(circle at 40% 40%, rgba(37, 99, 235, 0.25) 0%, rgba(37, 99, 235, 0.0) 60%);
+        }
+        
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 22px;
+        }
+        
+        .hero p {
+            font-size: 1.25em;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            color: #334155;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 22px;
+            font-size: 1.06em;
+            font-weight: 800;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(180deg, var(--brand) 0%, #1f4fd6 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(180deg, var(--brand-2) 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.85);
+            color: var(--brand);
+            border: 2px solid rgba(37, 99, 235, 0.25);
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(240, 247, 255, 0.95);
+            border-color: rgba(37, 99, 235, 0.45);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        #dashboards,
+        #pricing,
+        #how-it-works,
+        #telegram-bot,
+        #faq,
+        #economics {
+            background: transparent;
+        }
+
+        #dashboards .container,
+        #pricing .container,
+        #how-it-works .container,
+        #telegram-bot .container,
+        #faq .container,
+        #economics .container {
+            background: transparent;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 22px;
+            margin-top: 26px;
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 22px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .dashboard-card h3 {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 14px;
+        }
+        
+        .dashboard-card ul {
+            list-style: none;
+        }
+        
+        .dashboard-card li {
+            padding: 10px 0;
+            padding-left: 18px;
+            position: relative;
+            border-top: 1px dashed rgba(226, 232, 240, 0.9);
+        }
+
+        .dashboard-card li:first-child {
+            border-top: none;
+        }
+        
+        .dashboard-card li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #60a5fa 0%, var(--brand) 100%);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 900;
+            font-size: 0.92em;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+        }
+
+        .status-pill:before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+        }
+
+        .status-pill--ok:before {
+            background: var(--ok);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+        }
+
+        .status-pill--warn:before {
+            background: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+        }
+
+        .dashboard-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .dashboard-card ul {
+            flex: 1;
+        }
+
+        .dashboard-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+            align-items: stretch;
+        }
+
+        .dashboard-kpi {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 14px;
+            padding: 14px 14px;
+            box-shadow: var(--shadow-sm);
+            min-height: 96px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .dashboard-kpi-label {
+            color: #334155;
+            font-weight: 850;
+            font-size: 0.95em;
+        }
+
+        .dashboard-kpi-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-weight: 950;
+            letter-spacing: -0.01em;
+            font-size: 1.05em;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dashboard-kpi-value--big {
+            font-size: 1.22em;
+        }
+
+        .dashboard-kpi-sub {
+            color: var(--muted);
+            font-size: 0.9em;
+            font-weight: 750;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sparkline {
+            width: 100%;
+            height: 30px;
+            display: block;
+        }
+
+        .sparkline path {
+            stroke: rgba(37, 99, 235, 0.85);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .sparkline .fill {
+            fill: rgba(37, 99, 235, 0.10);
+            stroke: none;
+        }
+
+        @media (max-width: 720px) {
+            .dashboard-kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        
+        .solutions {
+            background-color: transparent;
+        }
+
+        .solutions .container {
+            background: transparent;
+        }
+
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .solution-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .solution-card--full {
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+
+        .solution-card h3 {
+            margin-top: 0;
+            font-size: 1.22em;
+            margin-bottom: 10px;
+        }
+
+        .solution-card ul {
+            list-style: none;
+        }
+
+        .solution-card li {
+            padding: 10px 0;
+            padding-left: 18px;
+            position: relative;
+            border-top: 1px dashed rgba(226, 232, 240, 0.9);
+        }
+
+        .solution-card li:first-child {
+            border-top: none;
+        }
+
+        .solution-card li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #60a5fa 0%, var(--brand) 100%);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .economics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .economics-kpi {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .economics-kpi--two {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: stretch;
+        }
+
+        @media (max-width: 720px) {
+            .economics-kpi--two {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .economics-kpi-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 14px;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.96) 100%);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .economics-kpi-label {
+            font-weight: 850;
+            color: #0f172a;
+        }
+
+        .economics-kpi-value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-weight: 900;
+            color: var(--brand);
+            white-space: nowrap;
+            font-size: 1.05em;
+        }
+
+        .kpi-note {
+            margin-top: 12px;
+            font-size: 0.98em;
+            color: var(--muted);
+        }
+        
+        .trust-badge {
+            background: linear-gradient(180deg, rgba(232, 244, 248, 0.9) 0%, rgba(240, 249, 255, 0.92) 100%);
+            border-left: 5px solid var(--brand);
+            padding: 16px 18px;
+            margin-top: 18px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        
+        .trust-badge strong {
+            color: var(--brand);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 26px;
+        }
+        
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: var(--radius);
+            padding: 22px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .pricing-card:hover {
+            border-color: rgba(37, 99, 235, 0.55);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+        
+        .pricing-card h3 {
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        
+        .price {
+            font-size: 2.05em;
+            font-weight: 900;
+            color: var(--brand);
+            margin: 12px 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .price-unit {
+            font-size: 0.6em;
+            color: #64748b;
+            font-weight: 700;
+        }
+        
+        .steps {
+            counter-reset: step-counter;
+        }
+        
+        .step {
+            counter-increment: step-counter;
+            margin-bottom: 34px;
+            padding-left: 60px;
+            position: relative;
+        }
+        
+        .step:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(180deg, var(--brand) 0%, #1e40af 100%);
+            color: white;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .step h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .step ul {
+            list-style: none;
+            margin-top: 12px;
+        }
+        
+        .step li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            color: var(--text);
+        }
+        
+        .step li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: var(--brand);
+            font-weight: 900;
+        }
+
+        /* How it works: process timeline */
+        .process-timeline {
+            position: relative;
+            margin-top: 18px;
+            padding-left: 6px;
+        }
+
+        .process-timeline:before {
+            content: "";
+            position: absolute;
+            left: 26px;
+            top: 18px;
+            bottom: 18px;
+            width: 2px;
+            background: linear-gradient(180deg, rgba(37, 99, 235, 0.28) 0%, rgba(37, 99, 235, 0.06) 100%);
+            border-radius: 999px;
+        }
+
+        .process-timeline:after {
+            content: "";
+            position: absolute;
+            left: 26px;
+            bottom: 10px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid rgba(37, 99, 235, 0.35);
+            transform: translateX(-50%);
+        }
+
+        .process-item {
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 14px;
+            align-items: start;
+            margin: 0 0 12px 0;
+        }
+
+        .process-marker {
+            position: relative;
+            width: 52px;
+            display: flex;
+            justify-content: center;
+            padding-top: 2px;
+        }
+
+        .process-marker span {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #ffffff;
+            background: linear-gradient(180deg, var(--brand) 0%, #1e40af 100%);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .process-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: var(--radius);
+            padding: 18px 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .process-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.18em;
+        }
+
+        .process-card p {
+            margin: 0;
+            color: #334155;
+            font-size: 1.02em;
+            line-height: 1.7;
+        }
+
+        .process-card ul {
+            list-style: none;
+            margin: 10px 0 0 0;
+            padding: 0;
+        }
+
+        .process-card li {
+            padding: 8px 0 8px 18px;
+            position: relative;
+            border-top: 1px dashed rgba(226, 232, 240, 0.9);
+            color: #334155;
+        }
+
+        .process-card li:first-child {
+            border-top: none;
+        }
+
+        .process-card li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #60a5fa 0%, var(--brand) 100%);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        @media (max-width: 520px) {
+            .process-item {
+                grid-template-columns: 44px 1fr;
+            }
+
+            .process-timeline:before {
+                left: 22px;
+            }
+
+            .process-marker {
+                width: 44px;
+            }
+
+            .process-marker span {
+                width: 32px;
+                height: 32px;
+            }
+
+            .process-timeline:after {
+                left: 22px;
+            }
+        }
+        
+        .telegram-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 18px;
+            margin-top: 26px;
+        }
+        
+        .telegram-card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 22px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .telegram-card h3 {
+            margin-top: 0;
+            font-size: 1.18em;
+        }
+        
+        .telegram-card ul {
+            list-style: none;
+        }
+        
+        .telegram-card li {
+            padding: 10px 0;
+            padding-left: 22px;
+            position: relative;
+            border-top: 1px dashed rgba(226, 232, 240, 0.9);
+        }
+
+        .telegram-card li:first-child {
+            border-top: none;
+        }
+        
+        .telegram-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--ok);
+            font-weight: 900;
+        }
+        
+        .faq-item {
+            margin-bottom: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .faq-item summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 16px 18px;
+            font-weight: 900;
+            font-size: 1.08em;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq-item summary:after {
+            content: "+";
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand);
+            border: 1px solid rgba(37, 99, 235, 0.25);
+            background: rgba(240, 247, 255, 0.7);
+            font-weight: 950;
+            flex: 0 0 auto;
+        }
+
+        .faq-item[open] summary:after {
+            content: "–";
+        }
+
+        .faq-answer {
+            color: #334155;
+            padding: 0 18px 16px 18px;
+        }
+
+        .faq-item[open] .faq-answer {
+            padding-top: 0;
+        }
+        
+        .faq-answer ul {
+            margin-top: 12px;
+            margin-left: 20px;
+        }
+        
+        .note {
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.95em;
+            margin-top: 12px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: var(--warn-bg);
+            color: var(--warn-text);
+            border-radius: 999px;
+            font-size: 0.92em;
+            font-weight: 800;
+            margin-top: 12px;
+            border: 1px solid rgba(146, 64, 14, 0.18);
+        }
+
+        footer {
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+            background: #0b1220;
+            color: #cbd5e1;
+        }
+
+        .footer-inner {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 24px;
+            padding: 34px 0;
+        }
+
+        .footer-title {
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin: 8px 0;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .footer-meta {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 0;
+            font-size: 0.95em;
+            color: #94a3b8;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .hero h1 {
+                font-size: 2em;
+            }
+            
+            .hero p {
+                font-size: 1.1em;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .step {
+                padding-left: 54px;
+            }
+
+            .header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                gap: 8px;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <a class="brand" href="#top" aria-label="MineGNK home">
+                    <span class="brand-mark" aria-hidden="true"></span>
+                    <span>MineGNK</span>
+                </a>
+                <nav aria-label="Primary">
+                    <ul>
+                        <li><a href="#dashboards">Dashboards</a></li>
+                        <li><a href="#solutions">Solutions</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#how-it-works">How it works</a></li>
+                        <li><a href="#telegram-bot">Telegram bot</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <a id="top"></a>
+    <section class="hero">
+        <div class="container">
+            <h1>Managed GPU infrastructure for Gonka participation — provision in days, confirm fit before you pay, bill predictably.</h1>
+            <p>Start participating in days, not weeks. Professionally deployed, monitored, and supported. Contract-first onboarding with KYC, a spec sheet before payment, and transparent billing.</p>
+            <div class="cta-buttons">
+                <a href="#how-it-works" class="btn btn-primary">Check availability and request quote</a>
+                <a href="#pricing" class="btn btn-secondary">View pricing packages</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARDS -->
+    <section id="dashboards">
+        <div class="container">
+            <h2>Dashboards</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Network overview</h3>
+                    <div class="dashboard-kpi-grid" role="list">
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Status</div>
+                            <div class="dashboard-kpi-value dashboard-kpi-value--big">
+                                <span id="kpi-live" class="status-pill status-pill--ok">Live</span>
+                            </div>
+                            <div id="kpi-live-sub" class="dashboard-kpi-sub">Synced &amp; fresh</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Latest block</div>
+                            <div id="kpi-block-height" class="dashboard-kpi-value dashboard-kpi-value--big">2,357,374</div>
+                            <svg class="sparkline" viewBox="0 0 120 30" preserveAspectRatio="none" aria-label="Latest block height trend">
+                                <path class="fill" id="spark-fill" d=""></path>
+                                <path id="spark-line" d=""></path>
+                            </svg>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Block age</div>
+                            <div id="kpi-block-age" class="dashboard-kpi-value dashboard-kpi-value--big">—</div>
+                            <div id="kpi-block-time" class="dashboard-kpi-sub">—</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Current epoch</div>
+                            <div id="kpi-epoch-id" class="dashboard-kpi-value dashboard-kpi-value--big">152</div>
+                            <div class="dashboard-kpi-sub">Epoch ID</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Epoch entry</div>
+                            <div id="kpi-effective-height" class="dashboard-kpi-value dashboard-kpi-value--big">2,350,974</div>
+                            <div id="kpi-epoch-entry-sub" class="dashboard-kpi-sub">Effective height</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Epoch participants</div>
+                            <div id="kpi-epoch-participants" class="dashboard-kpi-value dashboard-kpi-value--big">312</div>
+                            <div class="dashboard-kpi-sub">Active participants</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">New participants</div>
+                            <div id="kpi-admission" class="dashboard-kpi-value dashboard-kpi-value--big">Restricted</div>
+                            <div id="kpi-admission-sub" class="dashboard-kpi-sub">New nodes disabled until #2,443,558</div>
+                        </div>
+                        <div class="dashboard-kpi" role="listitem">
+                            <div class="dashboard-kpi-label">Inference whitelist</div>
+                            <div id="kpi-inference-whitelist" class="dashboard-kpi-value dashboard-kpi-value--big">#2,459,367</div>
+                            <div id="kpi-inference-sub" class="dashboard-kpi-sub">Whitelist block height</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="note">
+                Live from public endpoints. Updated at <span id="dashboards-updated-at">—</span>.
+                Public network notice: restrictions / whitelists are shown as of 2026-01-27.
+            </p>
+        </div>
+    </section>
+
+    <!-- SOLUTIONS -->
+    <section id="solutions" class="solutions">
+        <div class="container">
+            <h2>Solutions</h2>
+
+            <div class="solution-card solution-card--full">
+                <h3>What you get</h3>
+                <ul>
+                    <li>Enterprise-grade GPUs that are professionally deployed, monitored, and supported</li>
+                    <li>Dedicated bare-metal nodes with predictable performance and maximum efficiency</li>
+                    <li>Latest NVIDIA A100, H100, and H200 GPUs</li>
+                    <li>High availability across a large fleet with diverse specifications</li>
+                    <li>Upgrade or downgrade your package at any time</li>
+                    <li>Choose multiple network nodes to scale participation</li>
+                </ul>
+            </div>
+
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <h3>For Large-Scale Operators</h3>
+                    <ul>
+                        <li>Predictable performance on dedicated bare-metal nodes</li>
+                        <li>High availability across many GPU configurations</li>
+                        <li>Scale participation by adding multiple network nodes</li>
+                    </ul>
+                </div>
+
+                <div class="solution-card">
+                    <h3>For Pools and Resellers</h3>
+                    <ul>
+                        <li>GPU configuration matched to budget and participation goals</li>
+                        <li>Flexibility to upgrade or downgrade at any time</li>
+                        <li>Scale GPU access based on needs and budget</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="solution-card solution-card--full">
+                <h3>Managed service add-on</h3>
+                <ul>
+                    <li>Our team sets up everything for you, so you do not have to learn how to set up nodes and infrastructure</li>
+                    <li>We set up your GPUs and provide access to performance statistics</li>
+                    <li>Real-time monitoring</li>
+                    <li>An automated dashboard for real-time statistics, GPU performance, and network activity is under development</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ECONOMICS -->
+    <section id="economics">
+        <div class="container">
+            <h2>Efficiency</h2>
+
+            <div class="economics-grid">
+                <div class="solution-card">
+                    <h3>Operational efficiency</h3>
+                    <p>Designed to minimize missed epochs and downtime: dedicated bare-metal nodes, real-time monitoring, and an uptime SLA. With the managed service add-on, we handle setup and monitoring end-to-end for better operational consistency.</p>
+                    <div class="economics-kpi economics-kpi--two">
+                        <div class="economics-kpi-item">
+                            <div class="economics-kpi-label">Epoch participation rate</div>
+                            <div class="economics-kpi-value">99%</div>
+                        </div>
+                        <div class="economics-kpi-item">
+                            <div class="economics-kpi-label">Uptime SLA</div>
+                            <div class="economics-kpi-value">99.9%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+        <div class="container">
+            <h2>Pricing</h2>
+            <h3>GPU Package Selector</h3>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>8x A100 Server</h3>
+                    <div class="price">$0.99<span class="price-unit">/GPU/hour</span></div>
+                    <p><strong>$5,782 per month</strong></p>
+                    <p>Month-to-month contract</p>
+                </div>
+                <div class="pricing-card">
+                    <h3>8x H100 Server</h3>
+                    <div class="price">$1.80<span class="price-unit">/GPU/hour</span></div>
+                    <p><strong>$10,512 per month</strong></p>
+                    <p>Month-to-month contract</p>
+                </div>
+                <div class="pricing-card">
+                    <h3>8x H200 Server</h3>
+                    <div class="price">$2.40<span class="price-unit">/GPU/hour</span></div>
+                    <p><strong>$14,016 per month</strong></p>
+                    <p>Month-to-month contract</p>
+                </div>
+                <div class="pricing-card">
+                    <h3>8x B200 Server</h3>
+                    <div class="price">$3.50<span class="price-unit">/GPU/hour</span></div>
+                    <p><strong>$17,640 per month</strong></p>
+                    <p>Month-to-month contract</p>
+                </div>
+            </div>
+            <p><strong>Discounts:</strong> Available with 3+ months commitment.</p>
+            <p><strong>CPU Choice:</strong> CPU/RAM/NVMe/network/PCIe specifications available at quote time. Spec sheet provided before payment.</p>
+            <div class="trust-badge">
+                <strong>Trust embedded:</strong> Contract-first flow. Spec sheet before payment. Month-to-month terms. Transparent pricing with no hidden fees.
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="process-timeline" aria-label="Process steps">
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>1</span></div>
+                    <div class="process-card">
+                        <h3>Submit request</h3>
+                        <p>Submit your bundle preferences (GPU model, region, duration).</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>2</span></div>
+                    <div class="process-card">
+                        <h3>Complete KYC</h3>
+                        <p>Pass KYC verification. We provide a clear checklist of required documentation.</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>3</span></div>
+                    <div class="process-card">
+                        <h3>Review spec sheet and quote</h3>
+                        <p>Receive detailed infrastructure specifications and pricing. Confirm architecture fit and availability before committing.</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>4</span></div>
+                    <div class="process-card">
+                        <h3>Sign contract and pay</h3>
+                        <p>Sign a 1-month contract and pay for the first month. Payment precedes server assignment.</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>5</span></div>
+                    <div class="process-card">
+                        <h3>Provisioning</h3>
+                        <p>We assign servers, install and configure required software, connect your wallet, and launch into production. Provisioning typically completes within days.</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>6</span></div>
+                    <div class="process-card">
+                        <h3>Operate and monitor</h3>
+                        <p>Access performance statistics and operational dashboards. We continuously monitor infrastructure and respond to issues.</p>
+                    </div>
+                </div>
+                <div class="process-item">
+                    <div class="process-marker" aria-hidden="true"><span>7</span></div>
+                    <div class="process-card">
+                        <h3>Billing and renewal</h3>
+                        <ul>
+                            <li>Renewal: Pay no later than 10 days before contract end to extend</li>
+                            <li>Invoicing: Monthly invoices sent at calendar month end</li>
+                            <li>Adjustments: Invoice amounts adjusted for infrastructure downtime; applied to next payment or refunded</li>
+                            <li>Ledger: Transparent account balance and charge history</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p><strong>Support:</strong> Mon–Fri business hours support. No weekend onboarding.</p>
+        </div>
+    </section>
+
+    <!-- TELEGRAM BOT -->
+    <section id="telegram-bot">
+        <div class="container">
+            <h2>Telegram Bot</h2>
+            <h3>Proactive Node Monitoring</h3>
+            <div class="telegram-features">
+                <div class="telegram-card">
+                    <h3>Monitor Gonka AI nodes and receive alerts about:</h3>
+                    <ul>
+                        <li>Node status changes (offline/online)</li>
+                        <li>Validator state changes (jailing/unjailing)</li>
+                        <li>Balance changes exceeding 10% threshold</li>
+                        <li>Peer health issues (low peers)</li>
+                        <li>Synchronization problems</li>
+                        <li>Epoch participation (entered/missed epochs)</li>
+                        <li>Epoch reward history</li>
+                    </ul>
+                </div>
+                <div class="telegram-card">
+                    <h3>What this prevents:</h3>
+                    <ul>
+                        <li>Revenue loss from missed epochs</li>
+                        <li>Operational blindness during downtime</li>
+                        <li>Delayed incident response</li>
+                        <li>Unplanned participation gaps</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <div class="container">
+            <h2>FAQ</h2>
+            <details class="faq-item">
+                <summary>How quickly can I start participating?</summary>
+                <div class="faq-answer">Provisioning typically completes within days after KYC verification and contract signing. We provide a clear KYC checklist upfront to avoid delays.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Can I confirm infrastructure fit before committing budget?</summary>
+                <div class="faq-answer">Yes. We provide detailed spec sheets and confirm architecture requirements (network nodes, GPU servers, managed Kubernetes, IPs, regions) before you sign a contract.</div>
+            </details>
+            <details class="faq-item">
+                <summary>What happens if servers are down?</summary>
+                <div class="faq-answer">We continuously monitor infrastructure. If downtime is caused by our equipment or network, we compensate non-working hours according to SLA and adjust invoices accordingly.</div>
+            </details>
+            <details class="faq-item">
+                <summary>How does billing work?</summary>
+                <div class="faq-answer">
+                    <ul>
+                        <li>Month-to-month contracts</li>
+                        <li>Payment for first month required before server assignment</li>
+                        <li>Renewal: Pay no later than 10 days before contract end</li>
+                        <li>Monthly invoices sent at calendar month end</li>
+                        <li>Transparent ledger shows all charges and balance movements</li>
+                    </ul>
+                </div>
+            </details>
+            <details class="faq-item">
+                <summary>Can I scale up or down?</summary>
+                <div class="faq-answer">Yes. Upgrade or downgrade at any time. We provide fast quote turnaround and clear price/volume agreements for scaling plans.</div>
+            </details>
+            <details class="faq-item">
+                <summary>What support is available?</summary>
+                <div class="faq-answer">Mon–Fri business hours support. No weekend onboarding. Support responds to infrastructure issues and provides clear next steps.</div>
+            </details>
+            <details class="faq-item">
+                <summary>Are there discounts for longer commitments?</summary>
+                <div class="faq-answer">Yes. Discounts available with 3+ months commitment.</div>
+            </details>
+            <details class="faq-item">
+                <summary>What monitoring and visibility do I get?</summary>
+                <div class="faq-answer">Access to performance statistics. Automated dashboard with real-time statistics, GPU performance, and network activity (coming soon). Telegram bot monitoring planned.</div>
+            </details>
+            <details class="faq-item">
+                <summary>How are payments handled?</summary>
+                <div class="faq-answer">Payment cadence can be negotiated (split advances, multi-payer flows) to support scaling plans. Card payment limits can be accommodated through alternative arrangements.</div>
+            </details>
+            <details class="faq-item">
+                <summary>What if I need to change my setup?</summary>
+                <div class="faq-answer">Contact support to discuss architecture changes, region adjustments, or capacity modifications. We confirm availability and provide updated quotes before changes.</div>
+            </details>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-inner">
+                <div>
+                    <div class="footer-title">Gonka</div>
+                    <p>Managed GPU infrastructure for Gonka participation.</p>
+                    <p class="note">Support: Mon–Fri business hours. No weekend onboarding.</p>
+                </div>
+
+                <div>
+                    <div class="footer-title">Navigate</div>
+                    <ul class="footer-links">
+                        <li><a href="#dashboards">Dashboards</a></li>
+                        <li><a href="#solutions">Solutions</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#telegram-bot">Telegram Bot</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="footer-title">Procurement</div>
+                    <ul class="footer-links">
+                        <li><a href="#how-it-works">KYC and contract-first flow</a></li>
+                        <li><a href="#pricing">Spec sheet before payment</a></li>
+                        <li><a href="#how-it-works">Billing, invoicing, renewals</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-meta">
+                © <span id="year"></span> Gonka. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Footer year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Dashboards: live refresh (public endpoints)
+        (function () {
+            const CHAIN_STATUS_URL = 'https://node4.gonka.ai/chain-rpc/status';
+            const EPOCH_PARTICIPANTS_URL = 'https://node4.gonka.ai/v1/epochs/current/participants';
+            const FRESH_SECONDS = 120;
+            const POLL_MS = 20000;
+            const MAX_POINTS = 30;
+
+            const elLive = document.getElementById('kpi-live');
+            const elLiveSub = document.getElementById('kpi-live-sub');
+            const elBlockHeight = document.getElementById('kpi-block-height');
+            const elBlockAge = document.getElementById('kpi-block-age');
+            const elBlockTime = document.getElementById('kpi-block-time');
+            const elEpochId = document.getElementById('kpi-epoch-id');
+            const elEffectiveHeight = document.getElementById('kpi-effective-height');
+            const elEpochEntrySub = document.getElementById('kpi-epoch-entry-sub');
+            const elEpochParticipants = document.getElementById('kpi-epoch-participants');
+            const elDashboardsUpdatedAt = document.getElementById('dashboards-updated-at');
+            const sparkLine = document.getElementById('spark-line');
+            const sparkFill = document.getElementById('spark-fill');
+
+            const heights = [];
+
+            function fmtInt(n) {
+                try { return Number(n).toLocaleString('en-US'); } catch { return String(n); }
+            }
+
+            function fmtAge(seconds) {
+                if (!Number.isFinite(seconds)) return '—';
+                if (seconds < 60) return `${Math.max(0, Math.floor(seconds))}s`;
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return `${m}m ${s}s`;
+            }
+
+            function setStatus({ ok, label, sub }) {
+                if (!elLive) return;
+                elLive.textContent = label;
+                elLiveSub.textContent = sub;
+                elLive.classList.remove('status-pill--ok', 'status-pill--warn');
+                elLive.classList.add(ok ? 'status-pill--ok' : 'status-pill--warn');
+            }
+
+            function drawSparkline() {
+                if (!sparkLine || heights.length < 2) return;
+                const w = 120;
+                const h = 30;
+                const min = Math.min(...heights);
+                const max = Math.max(...heights);
+                const range = Math.max(1, max - min);
+                const step = w / (MAX_POINTS - 1);
+
+                const pts = heights.map((v, i) => {
+                    const x = i * step;
+                    const y = h - ((v - min) / range) * (h - 6) - 3;
+                    return [x, y];
+                });
+
+                const d = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`).join(' ');
+                sparkLine.setAttribute('d', d);
+
+                const dFill = `M 0 ${h} ` + pts.map(([x, y]) => `L ${x.toFixed(2)} ${y.toFixed(2)}`).join(' ') + ` L ${pts[pts.length - 1][0].toFixed(2)} ${h} Z`;
+                sparkFill.setAttribute('d', dFill);
+            }
+
+            async function fetchJson(url) {
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 8000);
+                try {
+                    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return await res.json();
+                } finally {
+                    clearTimeout(t);
+                }
+            }
+
+            function extractChainStatus(j) {
+                // Tendermint-style: { result: { sync_info: ... } }
+                const r = j && (j.result || j.Result || j);
+                const si = r && (r.sync_info || r.SyncInfo || r.syncInfo);
+                const catchingUp = si && (si.catching_up ?? si.catchingUp);
+                const latestHeight = si && (si.latest_block_height ?? si.latestBlockHeight);
+                const latestTime = si && (si.latest_block_time ?? si.latestBlockTime);
+                return {
+                    catchingUp: catchingUp,
+                    latestHeight: latestHeight,
+                    latestTime: latestTime,
+                };
+            }
+
+            function extractEpoch(j) {
+                const ap = j && j.active_participants;
+                const epochId = ap && ap.epoch_id;
+                const effectiveHeight = ap && ap.effective_block_height;
+                const participants = ap && Array.isArray(ap.participants) ? ap.participants.length : null;
+                const pocStart = ap && ap.poc_start_block_height;
+                return { epochId, effectiveHeight, participants, pocStart };
+            }
+
+            async function refresh() {
+                try {
+                    const [chainJ, epochJ] = await Promise.all([
+                        fetchJson(CHAIN_STATUS_URL),
+                        fetchJson(EPOCH_PARTICIPANTS_URL),
+                    ]);
+
+                    const cs = extractChainStatus(chainJ);
+                    const ep = extractEpoch(epochJ);
+
+                    const catchingUpBool = cs.catchingUp === true;
+
+                    const heightNum = Number(cs.latestHeight);
+                    if (Number.isFinite(heightNum)) {
+                        if (elBlockHeight) elBlockHeight.textContent = fmtInt(heightNum);
+                        heights.push(heightNum);
+                        while (heights.length > MAX_POINTS) heights.shift();
+                        drawSparkline();
+                    }
+
+                    const t = cs.latestTime ? new Date(cs.latestTime) : null;
+                    const now = new Date();
+                    const ageSec = t ? (now.getTime() - t.getTime()) / 1000 : NaN;
+
+                    if (elBlockAge) elBlockAge.textContent = fmtAge(ageSec);
+                    if (elBlockTime) elBlockTime.textContent = cs.latestTime ? `Latest: ${cs.latestTime}` : 'Latest: —';
+
+                    if (elEpochId && ep.epochId != null) elEpochId.textContent = String(ep.epochId);
+                    if (elEffectiveHeight && ep.effectiveHeight != null) elEffectiveHeight.textContent = fmtInt(ep.effectiveHeight);
+                    if (elEpochEntrySub) {
+                        const poc = ep.pocStart != null ? fmtInt(ep.pocStart) : '—';
+                        const eff = ep.effectiveHeight != null ? fmtInt(ep.effectiveHeight) : '—';
+                        elEpochEntrySub.textContent = `PoC start: ${poc} · Effective: ${eff}`;
+                    }
+                    if (elEpochParticipants && ep.participants != null) elEpochParticipants.textContent = fmtInt(ep.participants);
+
+                    const fresh = Number.isFinite(ageSec) && ageSec <= FRESH_SECONDS;
+                    const ok = !catchingUpBool && fresh;
+
+                    if (ok) {
+                        setStatus({ ok: true, label: 'Live', sub: 'Synced & fresh' });
+                    } else if (catchingUpBool) {
+                        setStatus({ ok: false, label: 'Syncing', sub: 'Catching up' });
+                    } else {
+                        setStatus({ ok: false, label: 'Stale', sub: 'No fresh blocks' });
+                    }
+
+                    if (elDashboardsUpdatedAt) elDashboardsUpdatedAt.textContent = new Date().toISOString().replace('.000', '');
+                } catch (e) {
+                    setStatus({ ok: false, label: 'Unknown', sub: 'Refresh failed' });
+                }
+            }
+
+            refresh();
+            setInterval(refresh, POLL_MS);
+        })();
+    </script>
+</body>
+</html>
