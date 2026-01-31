@@ -101,7 +101,6 @@
     .btn-primary:hover{background:linear-gradient(180deg,var(--brand2) 0%,#1e40af 100%);transform:translateY(-2px);box-shadow:var(--shadow)}
     .btn-secondary{background:rgba(255,255,255,.86);color:var(--brand);border:2px solid rgba(37,99,235,.25)}
     .btn-secondary:hover{background:rgba(240,247,255,.95);border-color:rgba(37,99,235,.45);transform:translateY(-2px);box-shadow:var(--shadow)}
-    @media (max-width: 768px){.cta{flex-direction:column}.btn{width:100%}h1{font-size:2em}.hero p{font-size:1.1em}}
 
     .card{background:rgba(255,255,255,.92);border:1px solid rgba(226,232,240,.92);border-radius:var(--r);padding:22px;box-shadow:var(--shadow-sm)}
     .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:18px}
@@ -212,7 +211,107 @@
     .footer-links a{color:#cbd5e1;text-decoration:none}
     .footer-links a:hover{color:#fff;text-decoration:underline}
     .footer-meta{border-top:1px solid rgba(255,255,255,.08);padding:14px 0;font-size:.95em;color:#94a3b8}
-    @media (max-width:768px){.footer-inner{grid-template-columns:1fr}}
+
+    /* === MOBILE STYLES === */
+    /* Mobile navigation toggle */
+    .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;border-radius:8px;transition:background .18s ease}
+    .nav-toggle:hover{background:rgba(226,232,240,.7)}
+    .nav-toggle svg{width:24px;height:24px;color:#334155}
+
+    @media (max-width:768px){
+      /* Mobile nav toggle button */
+      .nav-toggle{display:flex;align-items:center;justify-content:center}
+
+      /* Mobile nav menu */
+      nav{position:absolute;top:100%;left:0;right:0;background:rgba(248,250,252,.98);backdrop-filter:blur(14px);border-bottom:1px solid rgba(226,232,240,.9);box-shadow:var(--shadow);max-height:0;overflow:hidden;transition:max-height .3s ease}
+      nav.is-open{max-height:400px}
+      nav ul{flex-direction:column;padding:12px 20px;gap:4px}
+      nav a{padding:12px 14px;width:100%;border-radius:10px}
+
+      /* Header layout */
+      .header-inner{position:relative;padding:12px 0}
+
+      /* Hero adjustments */
+      .hero{padding:48px 0 56px}
+      h1{font-size:1.75em}
+      .hero p{font-size:1.05em}
+
+      /* CTA buttons */
+      .cta{flex-direction:column}
+      .cta .btn{width:100%}
+
+      /* Section padding */
+      section{padding:40px 0}
+      h2{font-size:1.6em}
+      h3{font-size:1.25em}
+
+      /* Cards */
+      .card{padding:16px}
+      .grid-2{grid-template-columns:1fr;gap:14px}
+
+      /* Bundle row */
+      .bundle-row{flex-direction:column;align-items:flex-start;border-radius:16px;padding:12px 14px;gap:8px}
+      .bundle-label{margin-bottom:4px}
+
+      /* Pricing */
+      .pricing-grid{grid-template-columns:1fr;gap:14px}
+      .pricing-card{padding:18px}
+      .price{font-size:1.75em}
+
+      /* FAQ */
+      .faq-item summary{padding:14px 16px;font-size:1em}
+      .faq-answer{padding:0 16px 14px}
+
+      /* Trust block */
+      .trust{padding:14px 16px}
+
+      /* Addon band */
+      .addon-band{padding:14px}
+      .addon-title{flex-direction:column;align-items:flex-start;gap:6px}
+
+      /* Footer */
+      .footer-inner{grid-template-columns:1fr}
+    }
+
+    @media (max-width:520px){
+      /* Extra small screens */
+      .container{padding:0 16px}
+      h1{font-size:1.5em}
+      .hero{padding:36px 0 44px}
+      .hero p{font-size:1em}
+
+      /* Hero features */
+      .hero-feature{padding:12px;gap:10px}
+      .hero-feature-mark{width:28px;height:28px;font-size:.9em}
+      .hero-feature-title{font-size:.95em}
+      .hero-feature-sub{font-size:.9em}
+
+      /* Buttons */
+      .btn{padding:12px 18px;font-size:1em}
+
+      /* Ticker overflow */
+      .ticker-item{font-size:.88em;gap:6px}
+      .ticker-track{gap:12px;padding-right:12px}
+      .status-pill{font-size:.85em;padding:2px 8px}
+
+      /* List items */
+      .list li{padding:8px 0 8px 16px}
+
+      /* Bundle pills */
+      .bundle-pill{font-size:.88em;padding:3px 8px}
+
+      /* Footer */
+      .footer-inner{gap:20px;padding:24px 0}
+      .footer-meta{padding:12px 0;font-size:.9em}
+    }
+
+    @media (max-width:380px){
+      /* Very small screens */
+      h1{font-size:1.35em}
+      h2{font-size:1.4em}
+      .price{font-size:1.5em}
+      .btn{padding:11px 16px;font-size:.95em}
+    }
   </style>
 </head>
 <body>
@@ -223,7 +322,14 @@
           <span class="brand-mark" aria-hidden="true"></span>
           <span>MineGNK</span>
         </a>
-        <nav aria-label="Primary">
+        <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <nav id="primary-nav" aria-label="Primary">
           <ul>
             <li><a href="#dashboards">Dashboards</a></li>
             <li><a href="#solutions">Solutions</a></li>
@@ -578,6 +684,32 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mobile navigation toggle
+    (function(){
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('primary-nav');
+      if (toggle && nav){
+        toggle.addEventListener('click', function(){
+          const isOpen = nav.classList.toggle('is-open');
+          toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        // Close menu when clicking a nav link
+        nav.querySelectorAll('a').forEach(function(link){
+          link.addEventListener('click', function(){
+            nav.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+          });
+        });
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e){
+          if (e.key === 'Escape' && nav.classList.contains('is-open')){
+            nav.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    })();
 
     (function () {
       // Ticker tooltips: hover (desktop) + tap (mobile).
